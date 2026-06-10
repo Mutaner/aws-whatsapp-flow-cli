@@ -113,7 +113,7 @@ For list commands, empty results show `[INFO] Ресурсы не найдены
 
 Need a custom integration, multi-account deployment, or CI/CD pipeline for your WhatsApp business?
 
-📧 **Email**: [your-email@example.com]  
+📧 **Email**: [alex.o.europe@gmail.com]  
 🔧 **One-time setup**: $200–$500 per script  
 📋 **Enterprise consulting**: Custom integrations, IAM policies, monitoring dashboards
 
