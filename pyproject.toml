@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "aws-whatsapp-flow-cli"
+version = "0.1.0"
+description = "CLI for AWS End User Messaging Social API (WhatsApp Business Flows)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "AWS New-API Gap Filler"},
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "boto3>=1.43.25",
+]
+
+[project.urls]
+Homepage = "https://github.com/Mutaner/aws-whatsapp-flow-cli"
+Source = "https://github.com/Mutaner/aws-whatsapp-flow-cli"
+
+[project.scripts]
+whatsapp-flow-cli = "whatsapp_flow_cli:main"
+
+[tool.setuptools.packages.find]
+include = ["whatsapp_flow_cli*"]
