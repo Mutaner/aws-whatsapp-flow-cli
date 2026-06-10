@@ -2,22 +2,23 @@
 """
 whatsapp_flow_cli.py — AWS WhatsApp Flow API CLI
 
-CLI-инструмент для взаимодействия с AWS End User Messaging Social API
-(WhatsApp Business Platform) через boto3.
+CLI tool for AWS End User Messaging Social API (WhatsApp Business Platform).
 
-Основные операции:
-  send-message   — Отправить WhatsApp-сообщение
-  create-flow    — Создать новый WhatsApp Flow
-  list-flows     — Список всех WhatsApp Flows
+Commands:
+  send-message   — Send a WhatsApp message
+  create-flow    — Create a new WhatsApp Flow
+  list-flows     — List all WhatsApp Flows for a WABA
 
-Примеры:
+Dependencies: boto3>=1.43.25 (pip install -r requirements.txt)
+
+Examples:
   python3 whatsapp_flow_cli.py --region us-east-1 send-message \\
       --origination-phone-number-id phone-number-id-xxx \\
-      --message '{"text":{"body":"Привет!"}}' \\
+      --message '{"text":{"body":"Hello!"}}' \\
       --meta-api-version v22.0
 
   python3 whatsapp_flow_cli.py --region us-east-1 create-flow \\
-      --id waba-xxx --flow-name "Бронирование" \\
+      --id waba-xxx --flow-name "Booking" \\
       --categories APPOINTMENT_BOOKING --publish
 
   python3 whatsapp_flow_cli.py --region us-east-1 list-flows --id waba-xxx

@@ -1,50 +1,38 @@
 # WhatsApp Flow CLI
 
+![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![AWS](https://img.shields.io/badge/aws-socialmessaging-orange.svg)
+
 **Bridge the gap between AWS End User Messaging Social and your terminal.**
 
-> ⚡ **June 2026**: AWS just shipped the `socialmessaging` service with WhatsApp Flow APIs. The SDK is brand new — community tooling, examples, and best practices don't exist yet. This CLI fills that gap.
+> ⚡ **June 2026**: AWS just shipped the `socialmessaging` service with WhatsApp Flow APIs.
+> The SDK is brand new — community tooling, examples, and best practices don't exist yet.
+> This CLI fills that gap.
 
 ## Description
 
-`whatsapp-flow-cli` is a production-ready command-line tool for managing WhatsApp Business Flows through the **AWS End User Messaging Social API** (`socialmessaging`). It wraps `boto3` with sane defaults, human-readable error messages, and zero-traceback output.
-
-**Why this exists:** The `socialmessaging` service was released in mid-2026. While `boto3 >= 1.43.25` has the methods, there are no third-party CLI wrappers, no StackOverflow examples, and no pre-built workflows. This tool gives you day-zero access to the API without reading raw AWS docs.
+`whatsapp-flow-cli` is a production-ready command-line tool for managing WhatsApp Business
+Flows through the **AWS End User Messaging Social API** (`socialmessaging`). It wraps `boto3`
+with sane defaults, human-readable error messages, and zero-traceback output.
 
 ### Features
 
 - **send-message** — Send WhatsApp messages (text, media, interactive) through AWS
 - **create-flow** — Create interactive WhatsApp Flows (lead gen, booking, surveys, etc.)
 - **list-flows** — List all Flows for a WhatsApp Business Account with pagination
-- **Zero-Traceback** — Every AWS error is parsed into a clean `[ОШИБКА]` message (or English-equivalent JSON)
+- **Zero-Traceback** — Every AWS error is parsed into clean structured output
 - **Network-safe** — 10s connect timeout, 30s read timeout, 3 retries on all API calls
 
 ## Installation
 
 ```bash
-pip install "boto3>=1.43.25"
+pip install -r requirements.txt
 ```
 
 Python 3.10+ required.
 
-## Authentication
-
-Credentials are resolved via the standard AWS credential chain:
-
-1. `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` environment variables
-2. `~/.aws/credentials` (default profile or `--profile` flag)
-3. IAM role (if running on EC2/ECS/Lambda)
-
-```bash
-# Option 1: Environment variables
-export AWS_ACCESS_KEY_ID=AKIA...
-export AWS_SECRET_ACCESS_KEY=...
-export AWS_DEFAULT_REGION=us-east-1
-
-# Option 2: Named profile
-python3 whatsapp_flow_cli.py --profile prod ...
-```
-
-## Usage
+## Quick Start
 
 ### Send a WhatsApp message
 
@@ -69,7 +57,7 @@ python3 whatsapp_flow_cli.py \
     --publish
 ```
 
-### List all Flows (with pagination)
+### List all Flows
 
 ```bash
 python3 whatsapp_flow_cli.py \
@@ -79,27 +67,65 @@ python3 whatsapp_flow_cli.py \
     --max-results 10
 ```
 
-### Additional options
+### Pipe through `jq` (pretty-print JSON)
+
+```bash
+python3 whatsapp_flow_cli.py \
+    --region us-east-1 \
+    list-flows --id waba-xxx --max-results 5 \
+    | jq '.Flows[] | {id: .FlowId, name: .Name, status: .Status}'
+```
+
+### Example JSON output
+
+```json
+{
+  "Flows": [
+    {
+      "FlowId": "1234567890",
+      "Name": "Customer Support",
+      "Status": "PUBLISHED",
+      "Categories": ["CUSTOMER_SUPPORT"],
+      "CreatedAt": "2026-06-10T12:00:00Z"
+    }
+  ],
+  "NextToken": null
+}
+```
+
+## Authentication
+
+Credentials follow the standard AWS credential chain:
+
+1. `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` environment variables
+2. `~/.aws/credentials` (default or `--profile` flag)
+3. IAM role on EC2/ECS/Lambda
+
+```bash
+# Named profile
+python3 whatsapp_flow_cli.py --profile prod --region eu-west-1 list-flows --id waba-xxx
+```
+
+## CLI Options
 
 | Flag | Description |
 |------|-------------|
+| `--region` | AWS region (e.g., us-east-1) |
 | `--profile` | AWS credential profile name |
 | `--endpoint-url` | Custom API endpoint (debugging) |
 | `--debug` | Enable boto3 debug logging |
 
 ## Error Handling
 
-This tool never prints Python tracebacks. All errors are caught, parsed, and displayed as structured messages:
+This tool never prints Python tracebacks. All errors are parsed to clean output:
 
+```text
+[ОШИБКА] Access denied. Check IAM policy.
+Details: User: arn:aws:iam::123... is not authorized to perform: socialmessaging:SendWhatsAppMessage
 ```
-[ОШИБКА] Доступ запрещён. У IAM-пользователя/роли нет прав на эту операцию.
-Детали: User: arn:aws:iam::123456789012:user/bot is not authorized to perform: socialmessaging:SendWhatsAppMessage
-```
-
-Error types handled explicitly:
 
 | AWS Error | User-friendly message |
-|-----------|---------------------|
+|-----------|----------------------|
 | `AccessDeniedException` | Permission denied — check IAM policy |
 | `ResourceNotFoundException` | Resource not found — verify IDs |
 | `ValidationException` | Invalid input — check parameter format |
@@ -107,18 +133,14 @@ Error types handled explicitly:
 | `TooManyRequestsException` | Too many requests — use exponential backoff |
 | `InternalServerException` | AWS internal error — retry later |
 
-For list commands, empty results show `[INFO] Ресурсы не найдены. API вернул пустой список.` before the JSON output.
+Empty results print `[INFO] No resources found.` before the JSON.
 
-## Commercial Support
+## Contact & Support
 
-Need a custom integration, multi-account deployment, or CI/CD pipeline for your WhatsApp business?
+Questions, feature requests, or enterprise integrations?
 
-📧 **Email**: [alex.o.europe@gmail.com]  
-🔧 **One-time setup**: $200–$500 per script  
-📋 **Enterprise consulting**: Custom integrations, IAM policies, monitoring dashboards
-
-This tool is part of the **AWS New-API Gap Filler** collection — bridging the gap between AWS API releases and community tooling since June 2026.
+📧 **alex.o.europe@gmail.com**
 
 ---
 
-*Made for the AWS End User Messaging Social API (June 2026 release)*
+*Part of the AWS New-API Gap Filler collection — June 2026.*
